@@ -1,7 +1,5 @@
 import numpy as np
 import random
-import math
-from utils import compute_product
 
 
 class Graph:
@@ -51,7 +49,6 @@ class Graph:
 
     def insert_ring(self, size_of_ring):
         """Insertion of a ring into the graph."""
-        print("Dans ring")
         ring_nodes = random.sample(range(self.number_nodes), size_of_ring)  # Select the nodes of the ring
         for j in range(size_of_ring - 1):
             self.matrix[ring_nodes[j], ring_nodes[j + 1]] = np.random.uniform(self.weight)
@@ -120,4 +117,3 @@ class Graph:
 
     def show_graph(self):
         print(np.matrix(self.matrix))
-
