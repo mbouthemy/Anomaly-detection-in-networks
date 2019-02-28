@@ -2,35 +2,35 @@ import numpy as np
 import random
 from scipy import special
 import math
-from utils import compute_product
-from graph import Graph
-from basic_detection import get_score_nodes
-from augmentation_community import augmentation_matrix
+import utils
+from old_graph import Graph
 import community
 import networkx as nx
 import matplotlib.pyplot as plt
+import anomalies
+import heavy_path
 
 
 def main():
+    w = 0.7
+    p = 0.05
+    number_nodes = 50
 
-    n = 30
-    p = 0.5
-    weight = 0.7
-    graph = Graph(n, p, weight)
-    graph.create_graph()
-    graph.selection_of_anomalies()
-    graph.info_anomalies()
-    graph.insert_anomalies()
-    # graph.show_graph()
-    np.save("../data/matrix.npy", graph.matrix)
+    DG = nx.erdos_renyi_graph(number_nodes, p, seed=2, directed=True)
+    utils.add_weight(DG)
 
-    # score_nodes = get_score_nodes(graph.matrix, number_monte_carlo=50)
+    nx.draw(DG)
+    plt.show()
 
-    matrix_augmented = augmentation_matrix(graph.matrix)
-    np.save("../data/matrix_augmented.npy", matrix_augmented)
-    partition_2 = community.best_partition(matrix_augmented)
+    list_of_anomalies = anomalies.selection_of_anomalies()
+    anomalies.info_anomalies(list_of_anomalies)
+    anomalies.insert_anomalies(DG, list_of_anomalies, w)
 
-    print("ta mere")
+    nx.draw(DG)
+    plt.show()
+
+    heavy_path.augmentation(DG)
+
     return 0
 
 

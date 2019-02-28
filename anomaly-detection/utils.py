@@ -1,4 +1,11 @@
 # utils.py
+import numpy as np
+
+
+def add_weight(direct_graph):
+    """Add weight to the existing Erdos Renyi Graph."""
+    for e in direct_graph.edges():
+        direct_graph[e[0]][e[1]]['weight'] = np.random.uniform()
 
 
 def compute_product(list_of_elements, begin):
