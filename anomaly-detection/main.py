@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 
 
 import anomalies
+import path_finder
 from communities import get_partition, build_community_features
 from localisation import compute_eigen_features
 from utils import upper_eig_generator
@@ -43,3 +44,8 @@ for i, part in enumerate(HG_parts):
     res = compute_eigen_features(part, eig_generator = upper_eig_generator, N_eigs = 20, N_null = 500)
     loc_feats = loc_feats.append(res)
 features = features.join(loc_feats) # Add localisation features
+
+
+# 3.5 - Path Finder
+paths_to_consider = path_finder.paths(DG, 30)
+print(paths_to_consider)
