@@ -25,7 +25,8 @@ def create_features_path_finder(graph, beam_width, number_monte_carlo, number_to
         feature_nodes = calculate_node_statistics(graph, paths_to_consider, monte_carlo_stat_path, j)
         list_of_path_features.append(feature_nodes)
         paths_to_consider = increase_path_size(paths_to_consider, graph)
-
+        
+    print("Features for path finder (3.5) inserted.")
     return list_of_path_features
 
 
