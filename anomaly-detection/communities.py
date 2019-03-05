@@ -11,6 +11,7 @@ import networkx as nx
 import scipy
 from generation import generate_community_density
 
+from GAW import GAW_G
 
 def get_partition(G):
     partition_map = community.best_partition(G.to_undirected())
@@ -29,7 +30,7 @@ def get_partition(G):
     
 
 def p_value_upper(x, dist):
-    return sum(x >= np.array(dist))/(len(dist) + 1)
+    return (1+sum(x >= np.array(dist)))/(len(dist) + 1)
     
 
 
@@ -43,13 +44,17 @@ def build_community_features(G, density_threshold = 0.5):
     features = pd.DataFrame(index = HG.nodes)
     HG_density = nx.density(HG)
     density_dist = generate_community_density(G)
+    HG_GAW = pd.Series(GAW_G(HG))
+    
     for part in HG_parts:
         # Compute features for each community
+        n_part = len(part)
         density = nx.density(part)
         density_rel = density / HG_density
-        density_penalized = density_rel / len(G)
+        density_penalized = density_rel / n_part
         density_pvalue = p_value_upper(density, density_dist)
         score = 0 if density_pvalue >= density_threshold else scipy.stats.norm.ppf(1-density_pvalue)
+        GAW_com = pd.Series(GAW_G(part))
         
         # Store features
         com_nodes = list(part.nodes)
@@ -57,6 +62,8 @@ def build_community_features(G, density_threshold = 0.5):
         features.loc[com_nodes, 'com_density_penalized'] = density_penalized
         features.loc[com_nodes, 'com_density_pvalue'] = density_pvalue
         features.loc[com_nodes, 'com_score'] = score
-        features.loc[com_nodes, "com_very_small"] = int(len(com_nodes) < 4)
+        features.loc[com_nodes, "com_very_small"] = int(n_part < 4)
+        features.loc[com_nodes, "com_GAW"] = GAW_com / HG_GAW.loc[com_nodes]
+        features.loc[com_nodes, "com_GAW_penalized"] = features.loc[com_nodes, "com_GAW"] / n_part
         
     return features, HG_parts
