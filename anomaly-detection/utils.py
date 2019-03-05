@@ -19,9 +19,6 @@ def compute_product(list_of_elements, begin):
 
 
 
-
-
-
 def upper_eig_generator(G, N_eigs):
     '''
         Compute the N_eigs upper eigen value of the symetrized adjacengy matrix of G
@@ -29,15 +26,20 @@ def upper_eig_generator(G, N_eigs):
     W_s = get_sym_adj(G)
     n = len(G)
     N_eigs = min(N_eigs, n)
-    if N_eigs < 0.8*n:
+    if N_eigs < 0.8*n or True:
         eig_vals, eig_vecs = scipy.sparse.linalg.eigsh(W_s, k = N_eigs, which = "LM")
     else: # Too small to use sparse
         eig_vals, eig_vecs = scipy.linalg.eigh(W_s.toarray(), k = N_eigs, which = "LM")
     return eig_vecs
 
 
-def p_val_upper(V, T):
-    p_val = (1 + (np.expand_dims(V, axis=-1) <= T).sum(axis = -1))/(len(T) + 1)
+def p_val_upper(V, D):
+    p_val = (1 + (np.expand_dims(V, axis=-1) <= D).sum(axis = -1))/(len(D) + 1)
+    return p_val
+
+
+def p_val_lower(V, D):
+    p_val = (1 + (np.expand_dims(V, axis=-1) >= D).sum(axis = -1))/(len(D) + 1)
     return p_val
 
 

@@ -10,7 +10,7 @@ import networkx as nx
 import community
 from generation import generate_null_distrib
 
-from utils import p_val_upper, upper_eig_generator
+from utils import p_val_upper, upper_eig_generator, p_val_lower
 
 #
 # Statistic function for the test of eigen value
@@ -152,6 +152,28 @@ def norm_based_features(norm, D, S, eigs, threshold = 0.05):
 
 
 
+def direct_local_feats(norm, eigs, D, threshold = 0.05):
+    # Select vector with contrib test stat
+    V_i = norm(eigs)
+    V = contrib_stat(V_i)
+    p_val = p_val_lower(V, D)
+    
+    # Only keep significant vector
+    vector_selector = (p_val < threshold)
+    n = sum(vector_selector)
+    if n == 0: # Nothing significant
+        return np.zeros((len(eigs)))
+    V_i = V_i[:, vector_selector]
+    
+    return V_i.sum(axis = -1)
+
+
+def contrib_stat(X, threshold = 0.9):
+    ordered_contrib = np.cumsum(np.flip(np.sort(X, axis = 0), axis = 0), axis = 0) / X.sum(axis = 0)
+    N = np.sum((ordered_contrib < threshold), axis = 0)
+    return N
+
+
 
 
 
@@ -160,12 +182,13 @@ def compute_eigen_features(G, eig_generator, N_eigs, N_null):
             "abs_max" : lambda x : np.max(np.abs(x), axis = 0),
             "pow_4_sum": lambda x : np.sum(norm_IPR(x), axis = 0),
             "exp_sum" : lambda x : np.sum(norm_exp(x), axis = 0),
-            "sign_based" : sign_based_test
-            
+            "sign_based" : sign_based_test,
+            "90_contrib_IPR" : lambda x : contrib_stat(norm_IPR(x)),
+            "90_contrib_abs" : lambda x : contrib_stat(np.abs(x)),
         }
     
-    D = generate_null_distrib(G, eig_generator = upper_eig_generator, stats = stats, N_null = N_null, N_eigs = N_eigs)
-    eigs = upper_eig_generator(G, N_eigs)
+    D = generate_null_distrib(G, eig_generator = eig_generator, stats = stats, N_null = N_null, N_eigs = N_eigs)
+    eigs = eig_generator(G, N_eigs)
     
     feats = {}
     
@@ -179,6 +202,10 @@ def compute_eigen_features(G, eig_generator, N_eigs, N_null):
     # Sign based
     s = sign_based_features(D["sign_based"], eigs)
     feats["SignStat1"], feats["SignStat2"], feats["SignStatEqual1"], feats["SignStatEqual2"] = s
+    
+    # Direct localisation
+    feats["90ContribIPR"] = direct_local_feats(norm_IPR, eigs, D["90_contrib_IPR"])
+    feats["90ContribAbs"] = direct_local_feats(lambda x : np.abs(x), eigs, D["90_contrib_abs"])
     
     
     # Format the features to a dataframe
