@@ -5,6 +5,7 @@ import generation
 import utils
 from scipy import special
 from itertools import count
+import pandas as  pd
 
 
 def create_features_path_finder(graph, beam_width, number_monte_carlo, number_to_keep):
@@ -16,17 +17,16 @@ def create_features_path_finder(graph, beam_width, number_monte_carlo, number_to
     # Get the Monte Carlo statistics (that's a matrix).
     monte_carlo_stat_path = create_monte_carlo_statistics(graph, number_monte_carlo, beam_width, number_to_keep)
 
-    list_of_path_features = []  # List of the features for each size.
-
+    df = pd.DataFrame()  # Create the empty data frame
     paths_to_consider = create_paths(graph, beam_width)
 
     for j in range(19):
         paths_to_consider = keep_top_path(paths_to_consider, number_to_keep)
         feature_nodes = calculate_node_statistics(graph, paths_to_consider, monte_carlo_stat_path, j)
-        list_of_path_features.append(feature_nodes)
+        df['path_size_' + str(j + 3)] = feature_nodes
         paths_to_consider = increase_path_size(paths_to_consider, graph)
-
-    return list_of_path_features
+    print("Features for path finder (3.5) inserted.")
+    return df
 
 
 def calculate_node_statistics(graph, path_to_consider, monte_carlo_stat, current_feature):

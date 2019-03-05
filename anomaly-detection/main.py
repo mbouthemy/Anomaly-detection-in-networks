@@ -14,7 +14,7 @@ def main():
 
     list_of_anomalies = anomalies.selection_of_anomalies()
     anomalies.info_anomalies(list_of_anomalies)
-    anomalies.insert_anomalies(G, list_of_anomalies, w)
+    df_anomaly = anomalies.insert_anomalies(G, list_of_anomalies, w)
 
     """
     # Global features container
@@ -35,8 +35,7 @@ def main():
 
     # Create the feature based on path finder (3.5)
     # Real parameters are beam_width = 5000, number_monte_carlo = 500, number to keep (no idea...)
-    features_path_finder = create_features_path_finder(G, beam_width=100, number_monte_carlo=100, number_to_keep=20)
-    print(features_path_finder)
+    df_features_path_finder = create_features_path_finder(G, beam_width=100, number_monte_carlo=100, number_to_keep=20)
 
 
 if __name__ == '__main__':
