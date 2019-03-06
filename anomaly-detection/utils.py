@@ -45,7 +45,7 @@ def lower_sym_eig(G, N_eigs):
     return eig_vecs
 
 
-def upper_eig_generator(G, N_eigs):
+def upper_sym_eig(G, N_eigs):
     '''
         Compute the N_eigs upper eigen value of the symetrized adjacengy matrix of G
     '''
@@ -77,11 +77,11 @@ def p_val_upper(V, D):
     return p_val
 
 
-
 def p_val_lower(V, D):
     """Compute the p-value lower for Monte Carlo simulation."""
     p_val = (1 + (np.expand_dims(V, axis=-1) >= D).sum(axis = -1))/(len(D) + 1)
     return p_val
+
 
 def get_sym_adj(G):
     W = nx.to_scipy_sparse_matrix(G, nodelist=G.nodes(), weight="weight", format='csr')

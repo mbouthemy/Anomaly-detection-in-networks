@@ -61,7 +61,7 @@ def sign_based_features(D, eigs, threshold = 0.05):
     '''    
     # Compute the p_val for each vector
     V = sign_based_test(eigs)
-    p_val = p_val_upper(V, D)
+    p_val = p_val_lower(V, D)
     
     # Only keep significant vector
     vector_selector = (p_val < threshold)
@@ -69,6 +69,7 @@ def sign_based_features(D, eigs, threshold = 0.05):
     if n == 0: # Nothing significant
         return np.zeros((4, len(eigs)))
     eigs = eigs[:, vector_selector]
+    p_val = p_val[vector_selector]
         
     N_pos = np.sum(eigs > 0, axis = 0)
     N_neg = np.sum(eigs < 0, axis = 0)
@@ -225,10 +226,10 @@ def localisation_feats(G, HG_parts):
         print("Computing localisation feats for {} :".format(eig_name))
         loc_feats = pd.DataFrame()
         for i, part in enumerate(HG_parts):
-            print("\tCompute community {}/{}...".format(i+1, len(HG_parts)))
+            print("\tCompute for community {}/{} of size {}...".format(i+1, len(HG_parts), len(part)))
             res = compute_eigen_features(part, eig_generator = lower_rw_eig, N_eigs = 20, N_null = 500)
             loc_feats = loc_feats.append(res)
         loc_feats.columns = ["{}_{}".format(eig_name, feat_name) for feat_name in loc_feats.columns]
         loc_full_feats = loc_full_feats.join(loc_feats)
-    print("Done")
+    print("Done\n")
     return loc_full_feats   

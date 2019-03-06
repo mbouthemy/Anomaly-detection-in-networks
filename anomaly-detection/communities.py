@@ -48,11 +48,11 @@ def community_feats(G, density_threshold = 0.5):
     HG_density = nx.density(HG)
     print("\tGenerate density distribution...")
     density_dist = generate_community_density(G)
-    print("\Compute full network GAW...")
+    print("\tCompute full network GAW...")
     HG_GAW = pd.Series(GAW_G(HG))
     
     for i, part in enumerate(HG_parts):
-        print("\tCompute community {}/{}...".format(i+1, len(HG_parts)))
+        print("\tCompute community features for {}/{}...".format(i+1, len(HG_parts)))
         
         # Compute features for each community
         n_part = len(part)
@@ -72,5 +72,27 @@ def community_feats(G, density_threshold = 0.5):
         features.loc[com_nodes, "com_very_small"] = int(n_part < 4)
         features.loc[com_nodes, "com_GAW"] = GAW_com / HG_GAW.loc[com_nodes]
         features.loc[com_nodes, "com_GAW_penalized"] = features.loc[com_nodes, "com_GAW"] / n_part
+    print("Community features have been computed !\n")
         
     return features, HG_parts
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
