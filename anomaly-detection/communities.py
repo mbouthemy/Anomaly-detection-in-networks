@@ -24,15 +24,9 @@ def get_partition(G):
     return sub_Gs
 
 
-
-
-    
-
 def p_value_upper(x, dist):
     return sum(x >= np.array(dist))/(len(dist) + 1)
     
-
-
 
 def build_community_features(G, density_threshold = 0.5):
     HG = heavy_path.augmentation(G)
@@ -60,3 +54,4 @@ def build_community_features(G, density_threshold = 0.5):
         features.loc[com_nodes, "com_very_small"] = int(len(com_nodes) < 4)
         
     return features, HG_parts
+
