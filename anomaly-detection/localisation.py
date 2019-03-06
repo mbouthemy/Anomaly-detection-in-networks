@@ -10,7 +10,7 @@ import networkx as nx
 import community
 from generation import generate_null_distrib
 
-from utils import p_val_upper, upper_eig_generator, p_val_lower
+from utils import p_val_upper, p_val_lower
 
 #
 # Statistic function for the test of eigen value
@@ -213,3 +213,22 @@ def compute_eigen_features(G, eig_generator, N_eigs, N_null):
     feats.index = list(G.nodes)
     return feats
     
+
+
+from utils import lower_rw_eig, upper_comb_eig, upper_sym_eig, lower_sym_eig
+
+def localisation_feats(G, HG_parts):
+    generators = {"lower_rw" : lower_rw_eig, "upper_comb" : upper_comb_eig, "upper_sym" : upper_sym_eig, "lower_sym" : lower_sym_eig}
+    
+    loc_full_feats = pd.DataFrame(index = G.nodes())
+    for eig_name, eig_gen in generators.items():
+        print("Computing localisation feats for {} :".format(eig_name))
+        loc_feats = pd.DataFrame()
+        for i, part in enumerate(HG_parts):
+            print("\tCompute community {}/{}...".format(i+1, len(HG_parts)))
+            res = compute_eigen_features(part, eig_generator = lower_rw_eig, N_eigs = 20, N_null = 500)
+            loc_feats = loc_feats.append(res)
+        loc_feats.columns = ["{}_{}".format(eig_name, feat_name) for feat_name in loc_feats.columns]
+        loc_full_feats = loc_full_feats.join(loc_feats)
+    print("Done")
+    return loc_full_feats   

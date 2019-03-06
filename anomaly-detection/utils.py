@@ -19,18 +19,57 @@ def compute_product(list_of_elements, begin):
 
 
 
-def upper_eig_generator(G, N_eigs):
+def eigen(X, k, upper = True):    
+    n = X.shape[0]
+    
+    if k < n:
+        order = "LM" if upper else "SM"
+        eig_vals, eig_vecs = scipy.sparse.linalg.eigsh(X, k = k, which = order)
+    else: # Too small to use sparse
+        eig_vals, eig_vecs = np.linalg.eig(X.toarray())
+        
+        idx = eig_vals.argsort()[::-1]
+        idx = np.flip(idx)
+        eig_vals = eig_vals[idx]
+        eig_vecs = eig_vecs[:,idx]
+        
+    return eig_vals, eig_vecs
+
+
+def lower_sym_eig(G, N_eigs):
     '''
         Compute the N_eigs upper eigen value of the symetrized adjacengy matrix of G
     '''
     W_s = get_sym_adj(G)
-    n = len(G)
-    N_eigs = min(N_eigs, n)
-    if N_eigs < 0.8*n or True:
-        eig_vals, eig_vecs = scipy.sparse.linalg.eigsh(W_s, k = N_eigs, which = "LM")
-    else: # Too small to use sparse
-        eig_vals, eig_vecs = scipy.linalg.eigh(W_s.toarray(), k = N_eigs, which = "LM")
+    eig_vals, eig_vecs = eigen(W_s, N_eigs, upper = False)
     return eig_vecs
+
+
+def upper_sym_eig(G, N_eigs):
+    '''
+        Compute the N_eigs upper eigen value of the symetrized adjacengy matrix of G
+    '''
+    W_s = get_sym_adj(G)
+    eig_vals, eig_vecs = eigen(W_s, N_eigs, upper = True)
+    return eig_vecs
+
+
+def upper_comb_eig(G, N_eigs):
+    '''
+        Compute the N_eigs upper eigen value of the symetrized adjacengy matrix of G
+    '''
+    L_comb, L_rw = get_laplacians(G)
+    eig_vals, eig_vecs = eigen(L_comb, N_eigs + 1, upper = True)
+    return eig_vecs[:, 1:]
+
+
+def lower_rw_eig(G, N_eigs):
+    '''
+        Compute the N_eigs upper eigen value of the symetrized adjacengy matrix of G
+    '''
+    L_comb, L_rw = get_laplacians(G)
+    eig_vals, eig_vecs = eigen(L_rw, N_eigs + 1, upper = False)
+    return eig_vecs[:, :-1]
 
 
 def p_val_upper(V, D):
@@ -52,13 +91,14 @@ def get_sym_adj(G):
 def get_laplacians(G):
     W = nx.to_scipy_sparse_matrix(G, nodelist=G.nodes(), weight="weight", format='csr')
     n,m = W.shape
-    diags = W.sum(axis=1)
+    diags = W.T.sum(axis=1) + W.sum(axis = 1)
     D = scipy.sparse.spdiags(diags.flatten(), [0], m, n, format='csc')
+    D_inv = scipy.sparse.spdiags(1/(diags.flatten()), [0], m, n, format='csc')
     
     W_s = W + W.transpose()
     
     L_comb = D - W_s
-    L_rw = scipy.sparse.linalg.inv(D).dot(W_s)
+    L_rw = D_inv.dot(W_s)
     
     return L_comb, L_rw
 

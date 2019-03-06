@@ -35,18 +35,25 @@ def p_value_upper(x, dist):
 
 
 
-def build_community_features(G, density_threshold = 0.5):
+def community_feats(G, density_threshold = 0.5):
+    print("Compute community features :")
+    print("\tAugmentation of the network...")
     HG = heavy_path.augmentation(G)
+    print("\tBuilding partition...")
     HG_parts = get_partition(HG)
     
     
     # Build first feature
     features = pd.DataFrame(index = HG.nodes)
     HG_density = nx.density(HG)
+    print("\tGenerate density distribution...")
     density_dist = generate_community_density(G)
+    print("\Compute full network GAW...")
     HG_GAW = pd.Series(GAW_G(HG))
     
-    for part in HG_parts:
+    for i, part in enumerate(HG_parts):
+        print("\tCompute community {}/{}...".format(i+1, len(HG_parts)))
+        
         # Compute features for each community
         n_part = len(part)
         density = nx.density(part)

@@ -23,6 +23,7 @@ def generate_null(G):
     D = nx.DiGraph()
     D.add_weighted_edges_from(zip(s_in, s_out, W))
     D.remove_edges_from(D.selfloop_edges())
+    D.remove_nodes_from(list(nx.isolates(D)))
     
     return D
 
