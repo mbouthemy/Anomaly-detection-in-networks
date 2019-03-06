@@ -3,6 +3,7 @@ from math import ceil
 from utils import p_val_upper
 import pandas as pd
 import numpy as np
+import scipy.stats
 
 def weight_to_dict(G):
     '''

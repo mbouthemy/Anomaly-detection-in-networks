@@ -1,51 +1,40 @@
-import numpy as np
-import pandas as pd
-import scipy.stats
-import random
-import math
-import community
 import networkx as nx
-import matplotlib.pyplot as plt
-
-
-
 import anomalies
-import path_finder
-from communities import get_partition, build_community_features
-from localisation import compute_eigen_features
-from utils import upper_eig_generator
+from path_finder import create_features_path_finder
 import utils
 
 
 from GAW import GAW_with_null
 
-        
+from communities import community_feats
 
-
-w = 0.7
-p = 0.05
-number_nodes = 500
-
-G = nx.erdos_renyi_graph(number_nodes, p, directed=True)
-utils.add_weight(G)
-
-
-list_of_anomalies = anomalies.selection_of_anomalies()
-#anomalies.info_anomalies(list_of_anomalies)
-anomalies.insert_anomalies(G, list_of_anomalies, w)    
+from localisation import localisation_feats
 
 
 
+def main():
+    w = 0.7
+    p = 0.05
+    number_nodes = 500
 
-feats_gaw = GAW_with_null(G, levels = [1, 0.1, 0.2])
-feats_com, HG_parts = build_community_features(G)
+    G = nx.erdos_renyi_graph(number_nodes, p, seed=2, directed=True)
+    utils.add_weight(G)
+
+    list_of_anomalies = anomalies.selection_of_anomalies()
+    anomalies.info_anomalies(list_of_anomalies)
+    df_anomaly = anomalies.insert_anomalies(G, list_of_anomalies, w)
+    
+    
+    feats_gaw = GAW_with_null(G, levels = [1, 0.1, 0.2]) # 3.1
+
+    feats_coms, HG_parts = community_feats(G) # 3.2
+    
+    feats_locs = localisation_feats(G, HG_parts) # 3.3
+
+    # Create the feature based on path finder (3.5)
+    # Real parameters are beam_width = 5000, number_monte_carlo = 500, number to keep (no idea...)
+    feats_path = create_features_path_finder(G, beam_width=100, number_monte_carlo=100, number_to_keep=20)
 
 
-
-loc_feats = pd.DataFrame()
-for i, part in enumerate(HG_parts):
-    print("Compute {}/{}...".format(i+1, len(HG_parts)))
-    res = compute_eigen_features(part, eig_generator = upper_eig_generator, N_eigs = 20, N_null = 500)
-    loc_feats = loc_feats.append(res)
-
-
+if __name__ == '__main__':
+    main()

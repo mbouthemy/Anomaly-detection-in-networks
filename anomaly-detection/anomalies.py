@@ -3,6 +3,7 @@
 import numpy as np
 import random
 import networkx as nx
+import pandas as pd
 
 
 def selection_of_anomalies():
@@ -29,22 +30,24 @@ def info_anomalies(list_of_anomalies):
 
 
 def insert_anomalies(direct_graph, list_of_anomalies, w):
+    df_anomaly = pd.DataFrame(np.zeros(nx.number_of_nodes(direct_graph)), columns=['anomaly'])
     for x in list_of_anomalies:
         name_anomaly, size_anomaly = x[0], x[1]
         if name_anomaly == 'ring':
-            insert_ring(direct_graph, size_anomaly, w)
+            insert_ring(direct_graph, size_anomaly, w, df_anomaly)
         elif name_anomaly == 'path':
-            insert_direct_path(direct_graph, size_anomaly, w)
+            insert_direct_path(direct_graph, size_anomaly, w, df_anomaly)
         elif name_anomaly == 'clique':
-            insert_clique(direct_graph, size_anomaly, w)
+            insert_clique(direct_graph, size_anomaly, w, df_anomaly)
         elif name_anomaly == 'star':
-            insert_star(direct_graph, size_anomaly, w)
+            insert_star(direct_graph, size_anomaly, w, df_anomaly)
         else:
-            insert_tree(direct_graph, size_anomaly, w)
+            insert_tree(direct_graph, size_anomaly, w, df_anomaly)
     print('Anomalies inserted')
+    return df_anomaly
 
 
-def insert_ring(direct_graph, size_of_ring, w):
+def insert_ring(direct_graph, size_of_ring, w, df):
     """Insertion of a ring into the graph."""
     ring_nodes = random.sample(range(nx.number_of_nodes(direct_graph)), size_of_ring)  # Select the nodes of the ring
     for j in range(size_of_ring - 1):
@@ -54,17 +57,20 @@ def insert_ring(direct_graph, size_of_ring, w):
     # Connect the last one to the first one
     weight = np.random.uniform(w)
     direct_graph.add_weighted_edges_from([(ring_nodes[-1], ring_nodes[0], weight)])
+    df.iloc[ring_nodes] = 1  # Specify the nodes who are concerned with the anomaly.
 
 
-def insert_direct_path(direct_graph, size_of_path, w):
+def insert_direct_path(direct_graph, size_of_path, w, df):
     """ Insertion of a direct path into the graph."""
     path_nodes = random.sample(range(nx.number_of_nodes(direct_graph)), size_of_path)  # Select the nodes
     for j in range(size_of_path - 1):
         weight = np.random.uniform(w)
         direct_graph.add_weighted_edges_from([(path_nodes[j], path_nodes[j+1], weight)])
 
+    df.iloc[path_nodes] = 1  # Specify the nodes who are concerned with the anomaly.
 
-def insert_clique(direct_graph, size_of_clique, w):
+
+def insert_clique(direct_graph, size_of_clique, w, df):
     """Insertion of a clique in the graph."""
     clique_nodes = random.sample(range(nx.number_of_nodes(direct_graph)), size_of_clique)  # Select the nodes
 
@@ -76,9 +82,10 @@ def insert_clique(direct_graph, size_of_clique, w):
                 direct_graph.add_weighted_edges_from([(clique_nodes[i], clique_nodes[j], weight)])
             else:  # from j to i
                 direct_graph.add_weighted_edges_from([(clique_nodes[j], clique_nodes[i], weight)])
+    df.iloc[clique_nodes] = 1  # Specify the nodes who are concerned with the anomaly.
 
 
-def insert_star(direct_graph, size_of_star, w):
+def insert_star(direct_graph, size_of_star, w, df):
     """Insertion of a star scheme into the graph."""
     star_nodes = random.sample(range(nx.number_of_nodes(direct_graph)), size_of_star)  # Select the nodes
     middle = int(size_of_star / 2)
@@ -93,8 +100,10 @@ def insert_star(direct_graph, size_of_star, w):
         weight = np.random.uniform(w)
         direct_graph.add_weighted_edges_from([(star_nodes[middle], star_nodes[k], weight)])
 
+    df.iloc[star_nodes] = 1  # Specify the nodes who are concerned with the anomaly.
 
-def insert_tree(direct_graph, size_tree, w):
+
+def insert_tree(direct_graph, size_tree, w, df):
     """Insert tree in the graph, we suppose that size tree is 9."""
     tree_nodes = random.sample(range(nx.number_of_nodes(direct_graph)), size_tree)  # Select the nodes
 
@@ -106,3 +115,4 @@ def insert_tree(direct_graph, size_tree, w):
     for i in range(3):  # Second shell connection
         weight = np.random.uniform(w)
         direct_graph.add_weighted_edges_from([(tree_nodes[5 + i], tree_nodes[8], weight)])
+    df.iloc[tree_nodes] = 1  # Specify the nodes who are concerned with the anomaly.
