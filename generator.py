@@ -4,6 +4,7 @@ sys.path.insert(0, "anomaly_detection/")
 
 import numpy as np
 import pandas as pd
+import os
 
 from anomaly_detection.features import build_observations
 
@@ -42,21 +43,22 @@ def generate_observations(n, N = 1000, path = "features"):
     params = parameters_range()
     for i_run in range(N):
         w, p = random.choice(params)
-        t = time.clock()
+        t = time.perf_counter()
         print("\n\n####  Running for (w,p,n) = {}  ####\n\n".format((w,p,n)))
         try:
             build_observations(w = w, p = p, n = n, path = path, save = True)
         except KeyboardInterrupt:
             raise
         except:
-            time_spent = round(time.clock() - t) # in seconds
+            time_spent = round(time.perf_counter() - t) # in seconds
             print("\n\n#### ERROR #### The generation for (w,p,n) = {} has crashed ! ({} seconds)  #### ERROR ####\n\n".format((w,p,n), time_spent))
         else:
-            time_spent = round(time.clock() - t) # in seconds
+            time_spent = round(time.perf_counter() - t) # in seconds
             print("\n\n####  Features for (w,p,n) = {} have been saved ! ({} seconds)  ####\n\n".format((w,p,n), time_spent))
 
 
-
-generate_observations(500)
+dir_path = os.path.dirname(os.path.realpath(__file__))
+path_feats = os.path.join(dir_path, "features/")
+generate_observations(50, path = path_feats)
 
 
