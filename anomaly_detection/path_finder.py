@@ -58,13 +58,19 @@ def create_monte_carlo_statistics(graph, number_monte_carlo, beam_width, number_
         paths = create_paths(graph_null, beam_width)  # Initialise the path
         paths = keep_top_path(paths, number_to_keep)
 
-        largest_weight = max(paths)[0]  # Get the largest weight.
+        if len(paths) == 0:  # If the list is empty.
+            largest_weight = 0
+        else:
+            largest_weight = max(paths)[0]  # Get the largest weight.
         monte_carlo_statistics[T, 0] = largest_weight
 
         for i in range(1, number_path):  # Because we start with path of size 3
             paths = increase_path_size(paths, graph)
             paths = keep_top_path(paths, number_to_keep)
-            largest_weight = max(paths)[0]  # Get the largest weight.
+            if len(paths) == 0:
+                largest_weight = 0
+            else:
+                largest_weight = max(paths)[0]  # Get the largest weight.
             monte_carlo_statistics[T, i] = largest_weight
 
     return monte_carlo_statistics
@@ -121,7 +127,6 @@ def create_paths(graph, beam_width):
     for j in range(beam_width):
         heapq.heappush(paths_to_consider, (0, next(cnt), [1, 2, 3]))  # Initialise with dummy paths
 
-    # TODO: Check the case where there is no edge.
     for current_node in list(graph.nodes):
         max_weight_in = 0.
         max_weight_out = 0.
