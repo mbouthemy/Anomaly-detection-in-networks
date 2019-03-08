@@ -67,3 +67,9 @@ def invert_dict(d):
         inv_map[v] = inv_map.get(v, [])
         inv_map[v].append(k)
     return inv_map
+
+
+def trimmed_mean(array):
+    """Compute the trimmed mean of a list."""
+    trimmed_lst = sorted(array)[1:-1]
+    return sum(trimmed_lst) / len(trimmed_lst)
