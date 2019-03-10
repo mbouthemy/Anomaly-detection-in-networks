@@ -2,13 +2,15 @@
 import sys
 sys.path.insert(0, "anomaly_detection/")
 
+# Module imports
 import numpy as np
 import pandas as pd
 import os
+import random, time
 
+# Own import
 from anomaly_detection.features import build_observations
 
-import random, time
 
 def parameters_range_theoric(n, k = 5):
     '''
@@ -39,19 +41,28 @@ def parameters_range():
     return np.array(res)
   
 
-def generate_observations(n, N = 1000, path = "features"):
-    params = parameters_range()
+def generate_observations(n, params, N = 1000, path = "features"):
+    ''' Generator of networks.
+        Generates a network, computes its features and stores it in path
+        
+        Params:
+            n: the number of nodes
+            params: the set of parameters to use for the generation
+            N: the number of generation
+            path: the folder to store the features'''            
+        
     for i_run in range(N):
-        w, p = random.choice(params)
+        w, p = random.choice(params) # pick a random set of parameters
         t = time.perf_counter()
         print("\n\n####  Running for (w,p,n) = {}  ####\n\n".format((w,p,n)))
         try:
             build_observations(w = w, p = p, n = n, path = path, save = True)
         except KeyboardInterrupt:
             raise
-        except:
+        except Exception as e:
             time_spent = round(time.perf_counter() - t) # in seconds
-            print("\n\n#### ERROR #### The generation for (w,p,n) = {} has crashed ! ({} seconds)  #### ERROR ####\n\n".format((w,p,n), time_spent))
+            print("\n\n#### ERROR #### The generation for (w,p,n) = {} has crashed ! ({} seconds)  #### ERROR ####".format((w,p,n), time_spent))
+            print("#### ERROR #### {}  #### ERROR ####\n\n".format(e))
         else:
             time_spent = round(time.perf_counter() - t) # in seconds
             print("\n\n####  Features for (w,p,n) = {} have been saved ! ({} seconds)  ####\n\n".format((w,p,n), time_spent))
@@ -59,6 +70,6 @@ def generate_observations(n, N = 1000, path = "features"):
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 path_feats = os.path.join(dir_path, "features/")
-generate_observations(50, path = path_feats)
+generate_observations(50, params = parameters_range(), path = path_feats)
 
 

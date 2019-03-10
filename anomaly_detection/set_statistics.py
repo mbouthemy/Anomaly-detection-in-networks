@@ -1,6 +1,6 @@
 ####################################################################
 #
-#                   NetEMD STATISTICS (3.4)
+#                   NetEMD STATISTICS (3.5)
 #
 #  Functions to compute the statistics used for the NetEDM module and compute netEMD.
 #

@@ -31,6 +31,15 @@ def build_feats(G):
         Return a dataframe with index the nodes and columns the features.
     '''
     feats = pd.DataFrame(index = G.nodes())
+#    
+    # NetEMD features (section 3.4)
+    feats_emd = create_features_net_emd(G)
+    feats = feats.join(feats_emd)
+    
+    # Create the feature based on path finder (3.5)
+    # Real parameters are beam_width = 5000, number_monte_carlo = 500, number to keep (no idea...)
+    feats_path = create_features_path_finder(G, beam_width=100, number_monte_carlo=100, number_to_keep=20)
+    feats = feats.join(feats_path)
     
     # GAW features from section 3.1
     feats_gaw = GAW_with_null(G, levels = [1, 0.1, 0.2])
@@ -43,15 +52,6 @@ def build_feats(G):
     # Localisation features (section 3.3) using the heavy partition of seciton 3.2
     feats_locs = localisation_feats(G, HG_parts)
     feats = feats.join(feats_locs)
-#    
-    # NetEMD features (section 3.4)
-    feats_emd = create_features_net_emd(G)
-    feats = feats.join(feats_emd)
-    
-    # Create the feature based on path finder (3.5)
-    # Real parameters are beam_width = 5000, number_monte_carlo = 500, number to keep (no idea...)
-    feats_path = create_features_path_finder(G, beam_width=100, number_monte_carlo=100, number_to_keep=20)
-    feats = feats.join(feats_path)
 
     return feats
     
