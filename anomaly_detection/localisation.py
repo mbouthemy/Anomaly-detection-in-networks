@@ -10,7 +10,7 @@ import networkx as nx
 import community
 from generation import generate_null_distrib
 
-from utils import p_val_upper, upper_eig_generator
+from utils import p_val_upper, p_val_lower
 
 #
 # Statistic function for the test of eigen value
@@ -61,7 +61,7 @@ def sign_based_features(D, eigs, threshold = 0.05):
     '''    
     # Compute the p_val for each vector
     V = sign_based_test(eigs)
-    p_val = p_val_upper(V, D)
+    p_val = p_val_lower(V, D)
     
     # Only keep significant vector
     vector_selector = (p_val < threshold)
@@ -69,6 +69,7 @@ def sign_based_features(D, eigs, threshold = 0.05):
     if n == 0: # Nothing significant
         return np.zeros((4, len(eigs)))
     eigs = eigs[:, vector_selector]
+    p_val = p_val[vector_selector]
         
     N_pos = np.sum(eigs > 0, axis = 0)
     N_neg = np.sum(eigs < 0, axis = 0)
@@ -152,6 +153,28 @@ def norm_based_features(norm, D, S, eigs, threshold = 0.05):
 
 
 
+def direct_local_feats(norm, eigs, D, threshold = 0.05):
+    # Select vector with contrib test stat
+    V_i = norm(eigs)
+    V = contrib_stat(V_i)
+    p_val = p_val_lower(V, D)
+    
+    # Only keep significant vector
+    vector_selector = (p_val < threshold)
+    n = sum(vector_selector)
+    if n == 0: # Nothing significant
+        return np.zeros((len(eigs)))
+    V_i = V_i[:, vector_selector]
+    
+    return V_i.sum(axis = -1)
+
+
+def contrib_stat(X, threshold = 0.9):
+    ordered_contrib = np.cumsum(np.flip(np.sort(X, axis = 0), axis = 0), axis = 0) / X.sum(axis = 0)
+    N = np.sum((ordered_contrib < threshold), axis = 0)
+    return N
+
+
 
 
 
@@ -160,12 +183,13 @@ def compute_eigen_features(G, eig_generator, N_eigs, N_null):
             "abs_max" : lambda x : np.max(np.abs(x), axis = 0),
             "pow_4_sum": lambda x : np.sum(norm_IPR(x), axis = 0),
             "exp_sum" : lambda x : np.sum(norm_exp(x), axis = 0),
-            "sign_based" : sign_based_test
-            
+            "sign_based" : sign_based_test,
+            "90_contrib_IPR" : lambda x : contrib_stat(norm_IPR(x)),
+            "90_contrib_abs" : lambda x : contrib_stat(np.abs(x)),
         }
     
-    D = generate_null_distrib(G, eig_generator = upper_eig_generator, stats = stats, N_null = N_null, N_eigs = N_eigs)
-    eigs = upper_eig_generator(G, N_eigs)
+    D = generate_null_distrib(G, eig_generator = eig_generator, stats = stats, N_null = N_null, N_eigs = N_eigs)
+    eigs = eig_generator(G, N_eigs)
     
     feats = {}
     
@@ -180,9 +204,32 @@ def compute_eigen_features(G, eig_generator, N_eigs, N_null):
     s = sign_based_features(D["sign_based"], eigs)
     feats["SignStat1"], feats["SignStat2"], feats["SignStatEqual1"], feats["SignStatEqual2"] = s
     
+    # Direct localisation
+    feats["90ContribIPR"] = direct_local_feats(norm_IPR, eigs, D["90_contrib_IPR"])
+    feats["90ContribAbs"] = direct_local_feats(lambda x : np.abs(x), eigs, D["90_contrib_abs"])
+    
     
     # Format the features to a dataframe
     feats = pd.DataFrame.from_dict(feats)
     feats.index = list(G.nodes)
     return feats
     
+
+
+from utils import lower_rw_eig, upper_comb_eig, upper_sym_eig, lower_sym_eig
+
+def localisation_feats(G, HG_parts):
+    generators = {"lower_rw" : lower_rw_eig, "upper_comb" : upper_comb_eig, "upper_sym" : upper_sym_eig, "lower_sym" : lower_sym_eig}
+    
+    loc_full_feats = pd.DataFrame(index = G.nodes())
+    for eig_name, eig_gen in generators.items():
+        print("Computing localisation feats for {} :".format(eig_name))
+        loc_feats = pd.DataFrame()
+        for i, part in enumerate(HG_parts):
+            print("\tCompute for community {}/{} of size {}...".format(i+1, len(HG_parts), len(part)))
+            res = compute_eigen_features(part, eig_generator = lower_rw_eig, N_eigs = 20, N_null = 500)
+            loc_feats = loc_feats.append(res)
+        loc_feats.columns = ["{}_{}".format(eig_name, feat_name) for feat_name in loc_feats.columns]
+        loc_full_feats = loc_full_feats.join(loc_feats)
+    print("Done\n")
+    return loc_full_feats   
