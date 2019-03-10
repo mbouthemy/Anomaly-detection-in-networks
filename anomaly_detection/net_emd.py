@@ -5,8 +5,8 @@ from utils import trimmed_mean
 from bisect import bisect
 import pandas as pd
 from scipy import special
-import set_statistics.statistics_1 as stat_1
-import set_statistics.statistics_2 as stat_2
+from set_statistics import statistics_1 as stat_1
+from set_statistics import statistics_2 as stat_2
 
 
 def create_features_net_emd(graph, number_monte_carlo=200):
@@ -27,7 +27,7 @@ def create_features_net_emd(graph, number_monte_carlo=200):
     p_values = find_p_value_of_each_statistics(y_ref, reference_set, null_set)
 
     # Calculate the data frame based on the two scores formulas.
-    df = calculate_score_nodes(set_of_statistics, p_values, G_stat_non_normalized)
+    df = calculate_score_nodes(graph, set_of_statistics, p_values, G_stat_non_normalized)
     print("\nThe features for the Net EMD (3.4) have been created.")
     return df
 
@@ -133,7 +133,7 @@ def find_p_value_of_each_statistics(y_ref, reference_set, null_set):
     number_statistic = len(null_set[0][0])
     y_null = np.zeros((number_null, number_statistic))  # Create the matrix to keep y of the null simulations.
     for i in range(number_null):
-        print("Compute net EMD {} / {} of the null set.".format(i+1, number_null))
+        print("Compute net EMD {} / {} of the null set.   ".format(i+1, number_null), end="\r")
         null_stat = null_set[i]
         y_null[i, :] = get_trimmed_mean_net_emd(null_stat, reference_set)
 
@@ -181,9 +181,9 @@ def score_2(list_of_node_stat, p_value):
     return list_of_scores
 
 
-def calculate_score_nodes(set_of_statistics, p_values, node_statistics_non_normalized):
+def calculate_score_nodes(G, set_of_statistics, p_values, node_statistics_non_normalized):
     """Assign a score for each nodes based on."""
-    df = pd.DataFrame()
+    df = pd.DataFrame(index = G.nodes())
     number_nodes = len(node_statistics_non_normalized)
     for j in range(len(set_of_statistics)):  # For each statistics
         name = set_of_statistics[j].__name__

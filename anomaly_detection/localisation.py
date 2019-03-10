@@ -12,10 +12,13 @@ from generation import generate_null_distrib
 
 from utils import p_val_upper, p_val_lower
 
+###################################################
 #
-# Statistic function for the test of eigen value
+#  Statistic function for the test of eigen value
 #
-    
+###################################################  
+
+
 def norm_IPR(x):
     '''
         Compute the IPR for every element of x
@@ -33,11 +36,13 @@ def norm_exp(x):
 
 
 def sign_based_test(eig_vecs):
+    ''' Compute the sign_based statistics (B.2.4)'''
     N_pos = np.sum(eig_vecs > 0, axis = 0)
     N_neg = np.sum(eig_vecs < 0, axis = 0)
-    teta_G = min(20, len(eig_vecs)) # do not handle trivial yet !
+    teta_G = min(20, len(eig_vecs))
     
-    T = np.minimum(N_pos + (N_pos == 0).astype(np.int) * teta_G, N_neg + (N_pos == 0).astype(np.int) * teta_G)/teta_G
+    T = np.minimum(N_pos + (N_pos == 0).astype(np.int) * teta_G,
+                   N_neg + (N_pos == 0).astype(np.int) * teta_G)/teta_G
     return T
 
 

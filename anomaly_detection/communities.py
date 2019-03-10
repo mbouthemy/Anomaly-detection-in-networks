@@ -20,6 +20,8 @@ from generation import generate_community_density
 from GAW import GAW_G
 from utils import invert_dict
 
+
+
 ###################################
 #
 #    Utils for the features
@@ -48,9 +50,13 @@ def p_value_upper(x, dist):
     
 
 
+
+###################################
 #
-# Features computation
+#    Features computation
 #
+###################################
+    
     
 def community_feats(G, density_threshold = 0.5):
     '''Compute all the communities features of section 3.2 of the paper

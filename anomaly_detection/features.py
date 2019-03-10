@@ -1,20 +1,35 @@
+####################################################################
+#
+#                   FEATURES BUILDER
+#
+#  This modules use all the modules from the paper and compute them for a network.
+#  You can use it to build features on a network and store it in a pickle format.
+#  This module is used to generate a lot of network with features to test the detection.
+#
+####################################################################
+
+# Modules imports
 import networkx as nx
-import anomalies
 from path_finder import create_features_path_finder
-import utils
+import numpy as np
 import os
-
-from GAW import GAW_with_null
-
-from communities import community_feats
-
-from localisation import localisation_feats
-
 import pandas as pd
+import datetime, string
 
-import datetime, random, string
+
+# Own modules imports
+from generation import generate_network
+from GAW import GAW_with_null
+from communities import community_feats
+from localisation import localisation_feats
+from net_emd import create_features_net_emd
+
 
 def build_feats(G):
+    ''' This function return a dataframe with all the features for each node.
+        It merge all the features compute by all the modules
+        Return a dataframe with index the nodes and columns the features.
+    '''
     feats = pd.DataFrame(index = G.nodes())
     
     # GAW features from section 3.1
@@ -28,6 +43,10 @@ def build_feats(G):
     # Localisation features (section 3.3) using the heavy partition of seciton 3.2
     feats_locs = localisation_feats(G, HG_parts)
     feats = feats.join(feats_locs)
+#    
+    # NetEMD features (section 3.4)
+    feats_emd = create_features_net_emd(G)
+    feats = feats.join(feats_emd)
     
     # Create the feature based on path finder (3.5)
     # Real parameters are beam_width = 5000, number_monte_carlo = 500, number to keep (no idea...)
@@ -35,27 +54,18 @@ def build_feats(G):
     feats = feats.join(feats_path)
 
     return feats
-
-def generate_network(w, p, n):
-    print("Generating a network...")
-    G = nx.erdos_renyi_graph(n, p, directed=True)
-    utils.add_weight(G)
-    list_of_anomalies = anomalies.selection_of_anomalies()
-    df_anomaly = anomalies.insert_anomalies(G, list_of_anomalies, w)
-    
-    # Remove isolates
-    isol = list(nx.isolates(G))
-    if len(isol) > 0:
-        print("Warning {} nodes were removed because isolated !".format(len(isol)))
-        G.remove_nodes_from(isol)
-        df_anomaly = df_anomaly.loc[list(G.nodes)].copy()
-    print("A network has been generated.\n")
-    
-    return G, df_anomaly
     
     
 
 def build_observations(w, p, n, save = True, path = ""):
+    ''' Generate a network, compute its features and store it in a pickle format.
+        Params:    
+            w: the weight distribution
+            p: the probability of an edge
+            save: if the features should be save
+            path: the folder where to store all features
+    
+    '''
     # Generate a network
     G, df_anomaly = generate_network(w,p,n)
     
@@ -77,12 +87,17 @@ def build_observations(w, p, n, save = True, path = ""):
 
 
 def get_name(n,w,p):
+    ''' Return a appropriate name for the network.
+        It will be the name of the pickle file with the features.
+        This names stores the parameter of the network and the time it was generated.
+    '''
+    
     # Store the time in a string
     now = datetime.datetime.now()   
     t = now.strftime("%m-%d-%H-%M")
     
     # Generate a random string for a unique name
-    has = ''.join(random.choices(string.ascii_uppercase + string.digits, k=3))
+    has = "".join(np.random.choice(string.ascii_uppercase + string.digits, 4))
     
     name = "n{}_w{}_p{}_t{}_{}.pickle".format(n,w,p,t,has)
     return name

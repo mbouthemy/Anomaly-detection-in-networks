@@ -1,4 +1,13 @@
-# Perform the augmentation and the community detection with the Python Louvain algorithm.
+####################################################################
+#
+#                   AUGMENTATION OF NETWORKS
+#
+#  Perform the augmentation of a network as described in the paper.
+#
+####################################################################
+
+
+# 
 import numpy as np
 
 
