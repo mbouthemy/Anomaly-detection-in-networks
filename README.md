@@ -46,5 +46,5 @@ More general files :
  - [anomalies.py](https://github.com/Marin35/Anomaly-detection-ENSAE/blob/master/anomaly_detection/anomalies.py) -> a set of function to add anomalies to a network
  - [features.py](https://github.com/Marin35/Anomaly-detection-ENSAE/blob/master/anomaly_detection/features.py) -> the main file to generate features for a network. It basically merged all the modules together.
  - [generation.py](https://github.com/Marin35/Anomaly-detection-ENSAE/blob/master/anomaly_detection/generation.py) -> a set of function to generate a network and also generate configuration model. Also provide function to generate a Monte Carlo distribution of a statistics with null configuration of a network.
- - [heavy_path.py](https://github.com/Marin35/Anomaly-detection-ENSAE/blob/master/anomaly_detection/heavy_path.py) -> a set of function to do the augmentation step of your network.(https://github.com/Marin35/Anomaly-detection-ENSAE/blob/master/anomaly_detection/set_statistics.py)
+ - [heavy_path.py](https://github.com/Marin35/Anomaly-detection-ENSAE/blob/master/anomaly_detection/heavy_path.py) -> a set of function to do the augmentation step of your network.
  - [utils.py](https://github.com/Marin35/Anomaly-detection-ENSAE/blob/master/anomaly_detection/utils.py) -> a set of useful function for all the modules.
