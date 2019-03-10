@@ -1,3 +1,14 @@
+####################################################################
+#
+#                   NET_EMD FEATURES (3.3)
+#
+#  Functions to compute the NetEMD features for a networkx as in the paper
+#  Use the function create_features_net_emd to get all the features for a network
+#
+####################################################################
+
+
+
 import networkx as nx
 import numpy as np
 from generation import generate_null

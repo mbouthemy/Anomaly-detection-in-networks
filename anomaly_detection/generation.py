@@ -8,7 +8,6 @@
 ####################################################################
 
 # Modules imports
-import pandas as pd
 import numpy as np
 import networkx as nx
 import random
@@ -18,6 +17,8 @@ import community
 # Own modules imports
 import heavy_path
 from utils import invert_dict
+import utils
+import anomalies
 
 
 

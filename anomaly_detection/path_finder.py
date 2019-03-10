@@ -1,4 +1,13 @@
-# Path finder implementation
+####################################################################
+#
+#                   PATH FINDER FEATURES (3.4)
+#
+#  Functions to compute the path features for a networkx as in the paper
+#  Use the function create_features_path_finder to get all the features for a network
+#
+####################################################################
+
+
 import heapq
 import numpy as np
 import generation
