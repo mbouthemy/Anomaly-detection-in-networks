@@ -1,3 +1,13 @@
+####################################################################
+#
+#                   COMMUNITIES FEATURES (3.2)
+#
+#  This modules computes the GAW features of a network G
+#  Use the function community_feats to get the features of your network G
+#
+####################################################################
+
+
 import scipy
 from math import ceil
 from utils import p_val_upper
