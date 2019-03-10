@@ -13,7 +13,7 @@ from utils import invert_dict
 
 
 def generate_null(G):
-    s_in, s_out, W = zip(*G.edges(data = "weight"))
+    s_in, s_out, W = zip(*G.edges(data="weight"))
     s_in, s_out, W = list(s_in), list(s_out), list(W)
     
     random.shuffle(s_in)
@@ -23,12 +23,11 @@ def generate_null(G):
     D = nx.DiGraph()
     D.add_weighted_edges_from(zip(s_in, s_out, W))
     D.remove_edges_from(D.selfloop_edges())
-    D.remove_nodes_from(list(nx.isolates(D)))
     
     return D
 
 
-def generate_null_with(G, N_eigs, N_tries = 10):
+def generate_null_with(G, N_eigs, N_tries=10):
     for i in range(N_tries):
         G_null = generate_null(G)
         if len(G_null) >= N_eigs:
