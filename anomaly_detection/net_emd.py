@@ -51,11 +51,11 @@ def compute_statistic(graph, set_of_statistics):
 
     for j in range(len(set_of_statistics)):
         stat = set_of_statistics[j]  # Get the statistic.
-        for node in nx.nodes(graph):
-            matrix_statistic[node, j] = stat(node, graph)  # Compute the statistic for the node.
+        for k in range(len(nx.nodes(graph))):
+            matrix_statistic[k, j] = stat(list(graph.nodes)[k], graph)  # Compute the statistic for the node.
         var = np.var(matrix_statistic[:, j])
-        for node in nx.nodes(graph):
-            matrix_statistic_normalized[node, j] = matrix_statistic[node, j] / var
+        for k in range(len(nx.nodes(graph))):
+            matrix_statistic_normalized[k, j] = matrix_statistic[k, j] / var
     return matrix_statistic_normalized, matrix_statistic
 
 
