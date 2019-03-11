@@ -38,13 +38,6 @@ def generate_network(w, p, n):
     utils.add_weight(G)
     list_of_anomalies = anomalies.selection_of_anomalies()
     df_anomaly = anomalies.insert_anomalies(G, list_of_anomalies, w)
-    
-    # Remove isolates
-    isol = list(nx.isolates(G))
-    if len(isol) > 0:
-        print("Warning {} nodes were removed because isolated !".format(len(isol)))
-        G.remove_nodes_from(isol)
-        df_anomaly = df_anomaly.loc[list(G.nodes)].copy()
     print("A network has been generated.\n")
     
     return G, df_anomaly
@@ -67,7 +60,6 @@ def generate_null(G):
     D = nx.DiGraph()
     D.add_weighted_edges_from(zip(s_in, s_out, W)) # Add the shuffle edge
     D.remove_edges_from(D.selfloop_edges()) # Remove self loop
-    D.remove_nodes_from(list(nx.isolates(D))) # Remove isolated nodes
     
     return D
 
