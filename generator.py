@@ -60,6 +60,7 @@ def generate_observations(n, params, N = 1000, path = "features"):
         except KeyboardInterrupt:
             raise
         except Exception as e:
+            #raise
             time_spent = round(time.perf_counter() - t) # in seconds
             print("\n\n#### ERROR #### The generation for (w,p,n) = {} has crashed ! ({} seconds)  #### ERROR ####".format((w,p,n), time_spent))
             print("#### ERROR #### {}  #### ERROR ####\n\n".format(e))

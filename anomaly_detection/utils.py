@@ -62,7 +62,8 @@ def get_laplacians(G):
     W = nx.to_scipy_sparse_matrix(G, nodelist=G.nodes(), weight="weight", format='csr')
     n,m = W.shape
     diags = W.T.sum(axis=1) + W.sum(axis = 1)
-    D = scipy.sparse.spdiags(diags.flatten(), [0], m, n, format='csc')
+    diags = diags.flatten() + 10E-6
+    D = scipy.sparse.spdiags(diags, [0], m, n, format='csc')
     D_inv = scipy.sparse.spdiags(1/(diags.flatten()), [0], m, n, format='csc')
     
     W_s = W + W.transpose()

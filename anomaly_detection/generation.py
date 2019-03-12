@@ -58,6 +58,7 @@ def generate_null(G):
     
     # Build a graph with the shuffled list
     D = nx.DiGraph()
+    D.add_nodes_from(G.nodes())
     D.add_weighted_edges_from(zip(s_in, s_out, W)) # Add the shuffle edge
     D.remove_edges_from(D.selfloop_edges()) # Remove self loop
     
