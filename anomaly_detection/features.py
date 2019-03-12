@@ -96,8 +96,5 @@ def get_name(n,w,p):
     now = datetime.datetime.now()   
     t = now.strftime("%m-%d-%H-%M")
     
-    # Generate a random string for a unique name
-    has = "".join(np.random.choice(string.ascii_uppercase + string.digits, 4))
-    
-    name = "n{}_w{}_p{}_t{}_{}.pickle".format(n,w,p,t,has)
+    name = "n{}_w{}_p{}_t{}.pickle".format(n,w,p,t)
     return name

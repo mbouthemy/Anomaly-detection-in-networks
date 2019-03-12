@@ -47,6 +47,10 @@ def generate_null(G):
         It is done like in the paper.
         Return a generated configuration model
     '''
+    # The network has only isolated node
+    if len(G.edges()) == 0:
+        return G
+    
     # Get the in-stubs, out-stubs and weight list
     s_in, s_out, W = zip(*G.edges(data = "weight"))
     s_in, s_out, W = list(s_in), list(s_out), list(W)

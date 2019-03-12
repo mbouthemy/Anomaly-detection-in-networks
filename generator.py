@@ -53,6 +53,7 @@ def generate_observations(n, params, N = 1000, path = "features"):
         
     for i_run in range(N):
         w, p = random.choice(params) # pick a random set of parameters
+        w, p = 0.01, 0.01
         t = time.perf_counter()
         print("\n\n####  Running for (w,p,n) = {}  ####\n\n".format((w,p,n)))
         try:
@@ -60,7 +61,7 @@ def generate_observations(n, params, N = 1000, path = "features"):
         except KeyboardInterrupt:
             raise
         except Exception as e:
-            #raise
+            raise
             time_spent = round(time.perf_counter() - t) # in seconds
             print("\n\n#### ERROR #### The generation for (w,p,n) = {} has crashed ! ({} seconds)  #### ERROR ####".format((w,p,n), time_spent))
             print("#### ERROR #### {}  #### ERROR ####\n\n".format(e))
@@ -71,6 +72,6 @@ def generate_observations(n, params, N = 1000, path = "features"):
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 path_feats = os.path.join(dir_path, "features/")
-generate_observations(n = 1000, params = parameters_range(), path = path_feats)
+generate_observations(n = 50, params = parameters_range(), path = path_feats)
 
 

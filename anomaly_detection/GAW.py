@@ -13,6 +13,7 @@ from math import ceil
 import pandas as pd
 import numpy as np
 import scipy.stats
+import networkx as nx
 
 
 # Own modules imports
@@ -47,6 +48,9 @@ def GAW_G(G):
     res = {}
     for i, W in W_nodes.items():
         res[i] = scipy.stats.mstats.gmean(W)
+        
+    for i in nx.isolates(G):
+        res[i] = 0
     return res
         
 
@@ -98,6 +102,9 @@ def GAW_with_null(G, levels, N_draw = 10000, p_val_threshold = 0.05):
             p_val = p_val_upper(V, D)
             V[p_val > p_val_threshold] = 0
             feats.loc[nodes_d, i] = V
+    
+    # Set zero for isolate
+    feats.loc[nx.isolates(G)] = 0
     
     feats_name = ["GAW_{}".format(level) for level in levels]
     feats.columns = feats_name

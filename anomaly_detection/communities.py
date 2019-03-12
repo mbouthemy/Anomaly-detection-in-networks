@@ -81,6 +81,8 @@ def community_feats(G, density_threshold = 0.5):
     print("\tGenerate density distribution...")
     density_dist = generate_community_density(G, N = 20)
     
+    print(list(nx.isolates(G)))
+    
     # Compute features for each community
     for i, part in enumerate(HG_parts):
         print("\tCompute community features for {}/{}...".format(i+1, len(HG_parts)))
