@@ -71,6 +71,6 @@ def generate_observations(n, params, N = 1000, path = "features"):
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 path_feats = os.path.join(dir_path, "features/")
-generate_observations(50, params = parameters_range(), path = path_feats)
+generate_observations(n = 1000, params = parameters_range(), path = path_feats)
 
 
