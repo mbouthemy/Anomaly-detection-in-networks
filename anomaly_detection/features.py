@@ -96,5 +96,5 @@ def get_name(n,w,p):
     now = datetime.datetime.now()   
     t = now.strftime("%m-%d-%H-%M")
     
-    name = "n{}_w{}_p{}_t{}.pickle".format(n,w,p,t)
+    name = "n{}_w{}_p{}_t{}_v2.pickle".format(n,w,p,t)
     return name

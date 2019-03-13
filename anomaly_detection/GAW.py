@@ -90,7 +90,7 @@ def GAW_with_null(G, levels, N_draw = 10000, p_val_threshold = 0.05):
     # Compute the GAW with the null for each degree
     feats = pd.DataFrame(index = G.nodes())
     for d , (nodes_d, W_d) in deg_grouped.items():
-        print("\tComputing GAW for degree {} for {} nodes...".format(d, len(nodes_d)).ljust(75), end = "\r")
+        print("\tComputing GAW for degree {} for {} nodes...".format(d, len(nodes_d)).ljust(55), end = "\r")
         W_d = np.array(W_d)
         W_d.sort(axis=0)
         W_null = np.random.choice(W_full, size = (N_draw, d))

@@ -16,7 +16,6 @@ import scipy
 
 
 
-
 ####################################
 #
 #   Eigen generation
@@ -24,7 +23,7 @@ import scipy
  ####################################
  
  
-def eigen(X, k, upper = True):    
+def eigen(X, k, upper = True, force = False):    
     ''' A generation of eigenvalue dealing with sparse matrix
         It uses the sparse method when it is possible.
         Else it uses the method of numpy solver.
@@ -36,16 +35,20 @@ def eigen(X, k, upper = True):
     '''
     n = X.shape[0]
     
-    if k < n:
-        order = "LM" if upper else "SM"
-        eig_vals, eig_vecs = scipy.sparse.linalg.eigsh(X, k = k, which = order)
-    else: # Too small to use sparse
+    if force or n <= k: # Too small to use sparse
         eig_vals, eig_vecs = np.linalg.eig(X.toarray())
         
-        idx = eig_vals.argsort()[::-1]
+        idx = np.abs(eig_vals).argsort()[::-1]
         idx = np.flip(idx)
         eig_vals = eig_vals[idx]
         eig_vecs = eig_vecs[:,idx]
+    
+    else:
+        order = "LM" if upper else "SM"
+        try:
+            eig_vals, eig_vecs = scipy.sparse.linalg.eigsh(X, k = k, which = order)
+        except Exception as e: # Resolution failed then we use numpy
+            return eigen(X, k, upper, force = True)
         
     return eig_vals, eig_vecs
 

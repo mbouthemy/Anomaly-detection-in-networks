@@ -1,12 +1,16 @@
-# Loading the library to python 
-import sys
-sys.path.insert(0, "anomaly_detection/")
-
 # Module imports
 import numpy as np
 import pandas as pd
 import os
 import random, time
+
+dir_path = os.path.dirname(os.path.realpath(__file__))
+
+# Loading the library to python 
+import sys
+sys.path.insert(0, os.path.join(dir_path, "anomaly_detection/"))
+
+
 
 # Own import
 from anomaly_detection.features import build_observations
@@ -53,13 +57,13 @@ def generate_observations(n, params, N = 1000, path = "features"):
         
     for i_run in range(N):
         w, p = random.choice(params) # pick a random set of parameters
-        w, p = 0.01, 0.01
         t = time.perf_counter()
         print("\n\n####  Running for (w,p,n) = {}  ####\n\n".format((w,p,n)))
         try:
             build_observations(w = w, p = p, n = n, path = path, save = True)
         except KeyboardInterrupt:
-            raise
+            print("\n\n#### GENERATION HAS BEEN ABORTED BY THE USER ! ####\n\n")
+            return False
         except Exception as e:
             raise
             time_spent = round(time.perf_counter() - t) # in seconds
@@ -70,8 +74,13 @@ def generate_observations(n, params, N = 1000, path = "features"):
             print("\n\n####  Features for (w,p,n) = {} have been saved ! ({} seconds)  ####\n\n".format((w,p,n), time_spent))
 
 
-dir_path = os.path.dirname(os.path.realpath(__file__))
+
 path_feats = os.path.join(dir_path, "features/")
-generate_observations(n = 50, params = parameters_range(), path = path_feats)
+print("Path for features {}".format(path_feats))
+
+n = 50
+paper = True
+params = parameters_range_theoric(n) if paper else parameters_range()
+generate_observations(n = n, params = params, path = path_feats)
 
 

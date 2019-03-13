@@ -72,7 +72,7 @@ def community_feats(G, density_threshold = 0.5):
     HG_parts = get_partition(HG)
     
     # Compute features for the full network
-    features = pd.DataFrame(index = HG.nodes) # The container for all the features
+    features = pd.DataFrame(index = G.nodes()) # The container for all the features
     HG_density = nx.density(HG)
     print("\tCompute full network GAW...")
     HG_GAW = pd.Series(GAW_G(HG))
@@ -81,11 +81,13 @@ def community_feats(G, density_threshold = 0.5):
     print("\tGenerate density distribution...")
     density_dist = generate_community_density(G, N = 20)
     
-    print(list(nx.isolates(G)))
+    print("\tINFO : Nodes {} are isolated and will be ignored.".format(list(nx.isolates(G))))
     
     # Compute features for each community
     for i, part in enumerate(HG_parts):
-        print("\tCompute community features for {}/{}...".format(i+1, len(HG_parts)))
+        print("\tCompute community features for {}/{} of size {}...".format(i+1, len(HG_parts), len(part)))
+        if len(part) == 1:
+            continue
         
         # Compute features for the community
         n_part = len(part) # Size of the partition
@@ -106,7 +108,8 @@ def community_feats(G, density_threshold = 0.5):
         features.loc[com_nodes, "com_GAW_rel"] = GAW_com / HG_GAW.loc[com_nodes] # Relative gaw for each nodes
         features.loc[com_nodes, "com_GAW_penalized"] = features.loc[com_nodes, "com_GAW_rel"] / n_part # Penalized relative gaw
     print("Community features have been computed !\n")
-        
+    
+    features = features.fillna(0)
     return features, HG_parts
 
 
