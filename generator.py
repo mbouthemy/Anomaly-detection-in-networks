@@ -1,3 +1,16 @@
+####################################################################
+#
+#                   GENERATOR OF NETWORK FEATURES
+#
+#  This files is used to generate a lot of network features.
+#  It stores them in the features folder.
+#  It will only ask you the number of nodes for each network.
+#  Then it will generate network with the parameters as in the paper.
+#  For each network it computes its features and store it.
+#
+####################################################################
+
+
 # Module imports
 import numpy as np
 import pandas as pd
