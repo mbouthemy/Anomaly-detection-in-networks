@@ -29,8 +29,8 @@ sys.path.insert(0, "anomaly_detection/") # Path of the library folder on your co
 ## Documentation
 To understand and see the results of the library, you can look at the two examples in the folder "examples".  
 
- 1. [Results](https://github.com/Marin35/Anomaly-detection-ENSAE/blob/master/Results.ipynb) : use the features available in the features folder to fit a RandomForest classifier and look at its performance.
- 2. [Features creation](#) : generate a network and build its features
+ 1. [Results](https://github.com/Marin35/Anomaly-detection-ENSAE/blob/master/examples/Results.ipynb) : use the features available in the features folder to fit a RandomForest classifier and look at its performance.
+ 2. [Features creation](https://github.com/Marin35/Anomaly-detection-ENSAE/blob/master/examples/Features%20generation.ipynb) : generate a network and build its features
 
 ## Files structure
 The library contains a lot of files, however each file is made for a specific module of the paper and has been commented.
@@ -48,3 +48,4 @@ More general files :
  - [generation.py](https://github.com/Marin35/Anomaly-detection-ENSAE/blob/master/anomaly_detection/generation.py) -> a set of function to generate a network and also generate configuration model. Also provide function to generate a Monte Carlo distribution of a statistics with null configuration of a network.
  - [heavy_path.py](https://github.com/Marin35/Anomaly-detection-ENSAE/blob/master/anomaly_detection/heavy_path.py) -> a set of function to do the augmentation step of your network.
  - [utils.py](https://github.com/Marin35/Anomaly-detection-ENSAE/blob/master/anomaly_detection/utils.py) -> a set of useful function for all the modules.
+ - [generator.py](https://github.com/Marin35/Anomaly-detection-ENSAE/blob/master/generator.py) -> useful to generate a lot of network and their features.
