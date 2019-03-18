@@ -36,7 +36,7 @@ def eigen(X, k, upper = True, force = False):
     n = X.shape[0]
     
     if force or n <= k: # Too small to use sparse
-        eig_vals, eig_vecs = np.linalg.eig(X.toarray())
+        eig_vals, eig_vecs = np.linalg.eigh(X.toarray())
         
         idx = np.abs(eig_vals).argsort()[::-1]
         idx = np.flip(idx)

@@ -291,14 +291,15 @@ def localisation_feats(G, HG_parts):
         loc_feats = pd.DataFrame() # Container for only the current generator
         # Compute the features for each partition
         for i, part in enumerate(HG_parts):
-            print("\tCompute for community {}/{} of size {}...".format(i+1, len(HG_parts), len(part)))
+            print("\tCompute for community {}/{} of size {}...".format(i+1, len(HG_parts), len(part)).ljust(50), end="\r")
             if len(part.edges()) == 0:
                 continue # Ignore because only isolated node
             res = compute_eigen_features(part, eig_generator = lower_rw_eig, N_eigs = 20, N_null = 500)
             loc_feats = loc_feats.append(res)
+        print("Done.".ljust(60), end="\n\n")
         # Store the features with the a dynamic column name
         loc_feats.columns = ["{}_{}".format(eig_name, feat_name) for feat_name in loc_feats.columns]
         loc_full_feats = loc_full_feats.join(loc_feats)
     loc_full_feats = loc_full_feats.fillna(0)
-    print("Done\n")
+    print("Localisation features have been computed !\n")
     return loc_full_feats   

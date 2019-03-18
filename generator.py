@@ -4,6 +4,7 @@ import pandas as pd
 import os
 import random, time
 
+# The folder of this files -> usefull to get the features folder
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
 # Loading the library to python 
@@ -58,14 +59,13 @@ def generate_observations(n, params, N = 1000, path = "features"):
     for i_run in range(N):
         w, p = random.choice(params) # pick a random set of parameters
         t = time.perf_counter()
-        print("\n\n####  Running for (w,p,n) = {}  ####\n\n".format((w,p,n)))
+        print("\n\n####  Network n°{} : Running for (w,p,n) = {}  ####\n\n".format(i_run+1, (w,p,n)))
         try:
             build_observations(w = w, p = p, n = n, path = path, save = True)
         except KeyboardInterrupt:
             print("\n\n#### GENERATION HAS BEEN ABORTED BY THE USER ! ####\n\n")
             return False
         except Exception as e:
-            raise
             time_spent = round(time.perf_counter() - t) # in seconds
             print("\n\n#### ERROR #### The generation for (w,p,n) = {} has crashed ! ({} seconds)  #### ERROR ####".format((w,p,n), time_spent))
             print("#### ERROR #### {}  #### ERROR ####\n\n".format(e))
@@ -75,12 +75,17 @@ def generate_observations(n, params, N = 1000, path = "features"):
 
 
 
-path_feats = os.path.join(dir_path, "features/")
-print("Path for features {}".format(path_feats))
+def main():
+    path_feats = os.path.join(dir_path, "features/")
+    print("Path for features {}".format(path_feats))
+    
+    n = int(input("Number of nodes for the generation : "))
+    
+    paper = True
+    params = parameters_range_theoric(n) if paper else parameters_range()
+    generate_observations(n = n, params = params, path = path_feats)
 
-n = 50
-paper = True
-params = parameters_range_theoric(n) if paper else parameters_range()
-generate_observations(n = n, params = params, path = path_feats)
 
+if __name__ == "__main__":
+    main()
 

@@ -85,7 +85,7 @@ def community_feats(G, density_threshold = 0.5):
     
     # Compute features for each community
     for i, part in enumerate(HG_parts):
-        print("\tCompute community features for {}/{} of size {}...".format(i+1, len(HG_parts), len(part)))
+        print("\tCompute community features for {}/{} of size {}...".format(i+1, len(HG_parts), len(part)).ljust(60), end="\r")
         if len(part) == 1:
             continue
         
@@ -107,7 +107,7 @@ def community_feats(G, density_threshold = 0.5):
         features.loc[com_nodes, "com_very_small"] = int(n_part < 4) # Special dummy for small community
         features.loc[com_nodes, "com_GAW_rel"] = GAW_com / HG_GAW.loc[com_nodes] # Relative gaw for each nodes
         features.loc[com_nodes, "com_GAW_penalized"] = features.loc[com_nodes, "com_GAW_rel"] / n_part # Penalized relative gaw
-    print("Community features have been computed !\n")
+    print("Community features have been computed !".ljust(80), end="\n\n")
     
     features = features.fillna(0)
     return features, HG_parts
